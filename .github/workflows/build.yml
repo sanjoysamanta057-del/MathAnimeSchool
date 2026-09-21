@@ -11,22 +11,35 @@ jobs:
       - name: Download project
         uses: actions/checkout@v4
 
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: Extract V8 project
         run: |
           unzip -o MathAnimeSchool_V8_Phone_Build.zip
-          ls -la
-
-      - name: Find project folder
-        run: |
           find . -name "settings.gradle.kts" -print
+
+      - name: Fix JVM target
+        run: |
+          PROJECT=$(dirname "$(find . -name settings.gradle.kts | head -1)")
+          echo "Project: $PROJECT"
+
+          find "$PROJECT" -name "*.gradle.kts" -type f -exec sed -i \
+            -e 's/JavaVersion.VERSION_11/JavaVersion.VERSION_17/g' \
+            -e 's/jvmTarget = "11"/jvmTarget = "17"/g' \
+            -e "s/jvmTarget.set(\"11\")/jvmTarget.set(\"17\")/g" {} +
 
       - name: Build Android APK
         run: |
-          cd MathAnimeSchool_V7_AI_Backend
+          PROJECT=$(dirname "$(find . -name settings.gradle.kts | head -1)")
+          cd "$PROJECT"
           gradle --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: MathAnimeSchool-APK
-          path: MathAnimeSchool_V7_AI_Backend/app/build/outputs/apk/debug/*.apk
+          path: "**/app/build/outputs/apk/debug/*.apk"
