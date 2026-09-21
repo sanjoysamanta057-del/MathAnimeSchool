@@ -1,0 +1,32 @@
+name: MathAnimeSchool Cloud Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download project
+        uses: actions/checkout@v4
+
+      - name: Extract V8 project
+        run: |
+          unzip -o MathAnimeSchool_V8_Phone_Build.zip
+          ls -la
+
+      - name: Find project folder
+        run: |
+          find . -name "settings.gradle.kts" -print
+
+      - name: Build Android APK
+        run: |
+          cd MathAnimeSchool_V7_AI_Backend
+          gradle --no-daemon assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MathAnimeSchool-APK
+          path: MathAnimeSchool_V7_AI_Backend/app/build/outputs/apk/debug/*.apk
