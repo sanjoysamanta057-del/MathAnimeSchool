@@ -1,4 +1,4 @@
-name: MathAnimeSchool Cloud Build
+  name: MathAnimeSchool Cloud Build
 
 on:
   workflow_dispatch:
@@ -21,18 +21,18 @@ jobs:
         run: |
           unzip -o MathAnimeSchool_V8_Phone_Build.zip
 
-      - name: Fix Java and Kotlin JVM targets
+      - name: Fix JVM targets
         run: |
           PROJECT=$(dirname "$(find . -name settings.gradle.kts | head -1)")
           echo "Project: $PROJECT"
 
           find "$PROJECT" -name "*.gradle.kts" -type f -exec sed -i \
-            -e 's/JavaVersion.VERSION_1_8/JavaVersion.VERSION_17/g' \
-            -e 's/JavaVersion.VERSION_11/JavaVersion.VERSION_17/g' \
-            -e 's/jvmTarget = "1.8"/jvmTarget = "17"/g' \
-            -e 's/jvmTarget = "11"/jvmTarget = "17"/g' \
-            -e 's/jvmTarget.set("1.8")/jvmTarget.set("17")/g' \
-            -e 's/jvmTarget.set("11")/jvmTarget.set("17")/g' {} +
+            -e 's/JavaVersion.VERSION_17/JavaVersion.VERSION_1_8/g' \
+            -e 's/JavaVersion.VERSION_11/JavaVersion.VERSION_1_8/g' \
+            -e 's/jvmTarget = "17"/jvmTarget = "1.8"/g' \
+            -e 's/jvmTarget.set("17")/jvmTarget.set("1.8")/g' \
+            -e 's/jvmTarget = "11"/jvmTarget = "1.8"/g' \
+            -e 's/jvmTarget.set("11")/jvmTarget.set("1.8")/g' {} +
 
       - name: Build Android APK
         run: |
@@ -44,4 +44,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MathAnimeSchool-APK
-          path: "**/app/build/outputs/apk/debug/*.apk"
+          path: "**/app/build/outputs/apk/debug/*.apk"        
